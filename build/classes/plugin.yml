@@ -1,0 +1,15 @@
+name: ServidoresDeMinecraft.ES
+main: es.servidoresdeminecraft.plugin.Main
+version: 1.0.0
+author: _Pitufo
+description: Integracion con la lista de servidores https://servidoresdeminecraft.es/
+commands:
+    srvmc:
+        description: Comando principal de ServidoresDeMinecraft.ES
+        aliases: [servidoresdeminecraft, votar, voto]
+    srvmc-update:
+        description: Comando para verificar version
+        aliases: [srvmc-actualizar, srvmc-upgrade]
+    srvmc-reload:
+        description: Comando para recargar el plugin
+        aliases: [srvmc-recargar, srvmc-load]

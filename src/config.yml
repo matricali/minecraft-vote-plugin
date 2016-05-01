@@ -1,0 +1,34 @@
+# No tocar este valor, se usa para que el auto-actualizador no borre tu config =)
+configVer: 2
+
+debug: false
+token: PEGAR_AQUI_TU_TOKEN
+
+broadcast:
+    activado: true
+    mensajeBroadcast: '&aGracias a {0} por votarnos! El ya ha obtenido su premio, usa &2/votar&a y obten el tuyo'
+
+comandosCustom: 
+    activado: true
+    comandos:
+    - money add %NOMBRE_JUGADOR% 10
+    
+premioFisico:
+    activado: true
+    items:
+    - 267,1
+    - 261,1
+    - 262,64
+    - 364,16
+    - 306,1
+    - 307,1
+    - 308,1
+    - 309,1
+    
+prefijo-chat: true
+    
+mensajes:
+    NO_HAS_VOTADO: '&6Todavia no has votado! Ingresa en &a%LINK_VOTO%'
+    YA_HAS_VOTADO: '&aGracias por votar, pero ya has obtenido tu premio!'
+    GRACIAS_POR_TU_VOTO: '&a&lGracias por votarnos! &aAqui tienes tu premio: '
+    
