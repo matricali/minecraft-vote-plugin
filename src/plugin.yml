@@ -7,9 +7,6 @@ commands:
     srvmc:
         description: Comando principal de ServidoresDeMinecraft.ES
         aliases: [servidoresdeminecraft, votar, voto]
-    srvmc-update:
-        description: Comando para verificar version
-        aliases: [srvmc-actualizar, srvmc-upgrade]
     srvmc-reload:
         description: Comando para recargar el plugin
         aliases: [srvmc-recargar, srvmc-load]

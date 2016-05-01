@@ -1,164 +1,145 @@
+/*
+ * Copyright (C) 2016 ServidoresDeMinecraft.ES
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package es.servidoresdeminecraft.plugin;
 
 import es.servidoresdeminecraft.plugin.commands.ReloadCommand;
-import es.servidoresdeminecraft.plugin.commands.UpdateCommand;
 import es.servidoresdeminecraft.plugin.commands.VoteCommand;
-import es.servidoresdeminecraft.plugin.util.Inventario;
-import es.servidoresdeminecraft.plugin.util.Version;
 
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
-
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- *
+ * Plugin de votación
+ * @link https://servidoresdeminecraft.es/
+ * @see https://servidoresdeminecraft.es/plugin
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-
 public class Main extends JavaPlugin {
-    
-    private Version updater;
-    private final Inventario inv = new Inventario(this);
-    
+
     private final String prefijo_chat = "&a&l[&bServidoresDeMinecraft.ES&a&l] ";
-    public int configVer = 0;
-    public final int configActual = 2;
-    public boolean comandosCustom = true;
-    public boolean premioFisico = true;
-    public List<String> listaComandos;
-    public List<String> listaItems;
-    
+    private boolean debug = false;
+    private boolean comandosPersonalizados;
+    private List<String> listaComandos;
+
     @Override
     public void onEnable() {
-        debugLog("Modo debug: activado");
-        /*
-         * Generar y cargar Config.yml
+        /**
+         * Configuración
          */
-        debugLog("Cargando configuración...");
-        cargarConfig();
-        /*
-         * Comandos y eventos
-         */
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        debugLog("Registrando comandos...");
+        log("Cargando configuración...");
+        cargarConfiguracion();
         
+        /**
+         * Comandos
+         */
+        log("Registrando comandos...");
         this.getCommand("srvmc").setExecutor(new VoteCommand(this));
-        this.getCommand("srvmc-update").setExecutor(new UpdateCommand(this));
         this.getCommand("srvmc-reload").setExecutor(new ReloadCommand(this));
-        
-        /*
-         * Finalizar...
-         */
-        updater = new Version(this, this.getVersion());
-        String actualizacion = updater.checkearVersion();
-        if (actualizacion != null) {
-            if (!actualizacion.equalsIgnoreCase("version actualizada")) { 
-                log(actualizacion);
-            }
-        }
-        log("Plugin de servidoresdeminecraft.es v"+this.getVersion()+" cargado correctamente.");
+
+        log("Plugin de servidoresdeminecraft.es v" + this.getVersion() + " cargado correctamente.");
     }
-    
-    public void cargarConfig() {
+
+    public void cargarConfiguracion() {
         File file = new File(getDataFolder() + File.separator + "config.yml");
+
         if (!file.exists()) {
             try {
                 getConfig().options().copyDefaults(true);
                 saveConfig();
                 log("Configuración por defecto generada correctamente");
             } catch (Exception e) {
-                this.getLogger().info("Error al generar la configuración por defecto!");
-                debugLog("Causa: "+e.toString());
+                log("Error al generar la configuración por defecto!");
+                debugLog("Causa: " + e.toString());
             }
         }
-        configVer = this.getConfig().getInt("configVer", configVer);
-        if (configVer == 0) { 
-        } else if (configVer < configActual) {
-            log(Level.SEVERE, "Tu configuración es de una versión más antigua a la de este plugin!"
-                + "Corrigelo o podrás tener errores..." );
-        }
-        comandosCustom = this.getConfig().getBoolean("comandosCustom.activado", comandosCustom);
-        premioFisico = this.getConfig().getBoolean("premioFisico.activado", premioFisico);
-        
-        if (comandosCustom) {
+
+        debug = this.getConfig().getBoolean("debug", debug);
+        comandosPersonalizados = this.getConfig().getBoolean("comandosPersonalizados.activado", comandosPersonalizados);
+
+        if (comandosPersonalizados) {
             try {
-                listaComandos = this.getConfig().getStringList("comandosCustom.comandos");
+                listaComandos = this.getConfig().getStringList("comandosPersonalizados.comandos");
             } catch (NullPointerException e) {
                 log(Level.WARNING, "No se ha podido cargar los premios de comandos customizados! (Error Config)");
-                comandosCustom = false;
-            }    
-        }
-        
-        if (premioFisico) {
-            try {
-                listaItems = this.getConfig().getStringList("premioFisico.items");
-            } catch (NullPointerException e) {
-                log(Level.WARNING, "No se ha podido cargar los premios fisicos! (Error Config)");
-                premioFisico = false;
+                comandosPersonalizados = false;
             }
         }
-        
     }
-    
-    
+
     public boolean isDebug() {
-        return this.getConfig().getBoolean("debug", false);
+        return debug;
     }
-    
+
     public void debugLog(String s) {
-        if (isDebug()){
+        if (isDebug()) {
             getLogger().log(Level.INFO, "[Debug] {0}", s);
         }
     }
-    
+
     public void log(String s) {
         getLogger().log(Level.INFO, s);
     }
-    
-    public void log(Level l, String s){
+
+    public void log(Level l, String s) {
         getLogger().log(l, s);
     }
 
-    public String getVersion(){
-        PluginDescriptionFile f = this.getDescription();
-        return f.getVersion();
+    public String getVersion() {
+        return this.getDescription().getVersion();
     }
-    
+
     public String getChatPrefix(boolean force) {
-        if(force || getConfig().getBoolean("prefijo-chat", true)){
+        if (force || getConfig().getBoolean("prefijo-chat", true)) {
             return ChatColor.translateAlternateColorCodes('&', prefijo_chat);
         }
-        
+
         return "";
     }
     
+    public boolean enviarComandoActivado() {
+        return comandosPersonalizados;
+    }
+    
+    public List<String> getComandosPersonalizados() {
+        return listaComandos;
+    }
+
     public String getChatPrefix() {
         return getChatPrefix(false);
     }
-    
-    public Version getUpdater() {
-        return this.updater;
-    }
-    
-    public Inventario getInv() {
-        return this.inv;
-    }
-    
-    public String Colorear(String s){
+
+    public String Colorear(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
-    
-    public String getMensaje(String key){
+
+    public String getMensaje(String key) {
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString("mensajes." + key, key));
     }
     
-    public String getAPIToken(){        
+    public String buildMessage(String message) {
+        return getChatPrefix() + Colorear(message);
+    }
+
+    public String getAPIToken() {
         return getConfig().getString("token", "");
     }
-    
+
 }
