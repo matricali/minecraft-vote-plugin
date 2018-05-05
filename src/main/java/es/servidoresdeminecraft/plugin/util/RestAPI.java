@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2016-2018 Jorge Matricali
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package es.servidoresdeminecraft.plugin.util;
 
@@ -18,7 +29,6 @@ import org.bukkit.Bukkit;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 
 /**
  *
@@ -37,19 +47,18 @@ public class RestAPI {
         return sb.toString();
     }
 
-
     public static JSONObject getJsonResponse(String resource_uri) {
         try {
             InputStream is = new URL(endpointAPI + resource_uri).openStream();
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = readAll(rd);
-            
-            JSONParser parser=new JSONParser();
-            
+
+            JSONParser parser = new JSONParser();
+
             Object json = parser.parse(jsonText);
             return (JSONObject) json;
-            
+
         } catch (MalformedURLException ex) {
             Bukkit.getLogger().log(Level.SEVERE, null, ex);
         } catch (IOException | ParseException ex) {

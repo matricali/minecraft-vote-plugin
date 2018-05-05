@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016-2018 Jorge Matricali
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package es.servidoresdeminecraft.plugin;
 
 import es.servidoresdeminecraft.plugin.commands.ReloadCommand;
@@ -19,12 +35,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author Jorge Matricali <jorgematricali@gmail.com>
  */
-
 public class Main extends JavaPlugin {
-    
+
     private Version updater;
     private final Inventario inv = new Inventario(this);
-    
+
     private final String prefijo_chat = "&a&l[&bServidoresDeMinecraft.ES&a&l] ";
     public int configVer = 0;
     public final int configActual = 2;
@@ -32,7 +47,7 @@ public class Main extends JavaPlugin {
     public boolean premioFisico = true;
     public List<String> listaComandos;
     public List<String> listaItems;
-    
+
     @Override
     public void onEnable() {
         debugLog("Modo debug: activado");
@@ -46,24 +61,24 @@ public class Main extends JavaPlugin {
          */
         PluginManager pluginManager = this.getServer().getPluginManager();
         debugLog("Registrando comandos...");
-        
+
         this.getCommand("srvmc").setExecutor(new VoteCommand(this));
         this.getCommand("srvmc-update").setExecutor(new UpdateCommand(this));
         this.getCommand("srvmc-reload").setExecutor(new ReloadCommand(this));
-        
+
         /*
          * Finalizar...
          */
         updater = new Version(this, this.getVersion());
         String actualizacion = updater.checkearVersion();
         if (actualizacion != null) {
-            if (!actualizacion.equalsIgnoreCase("version actualizada")) { 
+            if (!actualizacion.equalsIgnoreCase("version actualizada")) {
                 log(actualizacion);
             }
         }
-        log("Plugin de servidoresdeminecraft.es v"+this.getVersion()+" cargado correctamente.");
+        log("Plugin de servidoresdeminecraft.es v" + this.getVersion() + " cargado correctamente.");
     }
-    
+
     public void cargarConfig() {
         File file = new File(getDataFolder() + File.separator + "config.yml");
         if (!file.exists()) {
@@ -73,27 +88,27 @@ public class Main extends JavaPlugin {
                 log("Configuración por defecto generada correctamente");
             } catch (Exception e) {
                 this.getLogger().info("Error al generar la configuración por defecto!");
-                debugLog("Causa: "+e.toString());
+                debugLog("Causa: " + e.toString());
             }
         }
         configVer = this.getConfig().getInt("configVer", configVer);
-        if (configVer == 0) { 
+        if (configVer == 0) {
         } else if (configVer < configActual) {
             log(Level.SEVERE, "Tu configuración es de una versión más antigua a la de este plugin!"
-                + "Corrigelo o podrás tener errores..." );
+                    + "Corrigelo o podrás tener errores...");
         }
         comandosCustom = this.getConfig().getBoolean("comandosCustom.activado", comandosCustom);
         premioFisico = this.getConfig().getBoolean("premioFisico.activado", premioFisico);
-        
+
         if (comandosCustom) {
             try {
                 listaComandos = this.getConfig().getStringList("comandosCustom.comandos");
             } catch (NullPointerException e) {
                 log(Level.WARNING, "No se ha podido cargar los premios de comandos customizados! (Error Config)");
                 comandosCustom = false;
-            }    
+            }
         }
-        
+
         if (premioFisico) {
             try {
                 listaItems = this.getConfig().getStringList("premioFisico.items");
@@ -102,63 +117,62 @@ public class Main extends JavaPlugin {
                 premioFisico = false;
             }
         }
-        
+
     }
-    
-    
+
     public boolean isDebug() {
         return this.getConfig().getBoolean("debug", false);
     }
-    
+
     public void debugLog(String s) {
-        if (isDebug()){
+        if (isDebug()) {
             getLogger().log(Level.INFO, "[Debug] {0}", s);
         }
     }
-    
+
     public void log(String s) {
         getLogger().log(Level.INFO, s);
     }
-    
-    public void log(Level l, String s){
+
+    public void log(Level l, String s) {
         getLogger().log(l, s);
     }
 
-    public String getVersion(){
+    public String getVersion() {
         PluginDescriptionFile f = this.getDescription();
         return f.getVersion();
     }
-    
+
     public String getChatPrefix(boolean force) {
-        if(force || getConfig().getBoolean("prefijo-chat", true)){
+        if (force || getConfig().getBoolean("prefijo-chat", true)) {
             return ChatColor.translateAlternateColorCodes('&', prefijo_chat);
         }
-        
+
         return "";
     }
-    
+
     public String getChatPrefix() {
         return getChatPrefix(false);
     }
-    
+
     public Version getUpdater() {
         return this.updater;
     }
-    
+
     public Inventario getInv() {
         return this.inv;
     }
-    
-    public String Colorear(String s){
+
+    public String Colorear(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
-    
-    public String getMensaje(String key){
+
+    public String getMensaje(String key) {
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString("mensajes." + key, key));
     }
-    
-    public String getAPIToken(){        
+
+    public String getAPIToken() {
         return getConfig().getString("token", "");
     }
-    
+
 }
